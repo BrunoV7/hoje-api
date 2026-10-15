@@ -1,0 +1,14 @@
+﻿services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    container_name: hoje-database
+    platform: linux/amd64
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./data/hojeDB:/var/opt/mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${DB_PASS:?Defina DB_PASS no arquivo .env}"
+      MSSQL_PID: "Developer"
+    restart: no
