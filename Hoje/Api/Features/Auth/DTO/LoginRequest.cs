@@ -1,0 +1,7 @@
+namespace Hoje.Api.Features.Auth.DTO;
+
+public class LoginRequest
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+}
