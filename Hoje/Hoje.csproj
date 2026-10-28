@@ -18,6 +18,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
         <PackageReference Include="Scalar.AspNetCore" Version="2.18.0" />
+        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="11.0.0-rc.2.26504.105" />
     </ItemGroup>
 
     <ItemGroup>

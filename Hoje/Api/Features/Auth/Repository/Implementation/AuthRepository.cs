@@ -16,12 +16,12 @@ public class AuthRepository : IAuthRepository
 
     public async Task<User?> GetUserByEmail(string email)
     {
-        return await _context.Users.FirstOrDefaultAsync(user => user.Username == email);
+        return await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
     }
 
     public async Task<bool> DoesUserExistWithEmail(string email)
     {
-        return await _context.Users.AnyAsync(user => user.Username == email);
+        return await _context.Users.AnyAsync(user => user.Email == email);
     }
 
     public async Task<User> CreateUser(User newUser)

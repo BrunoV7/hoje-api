@@ -11,7 +11,7 @@ public class UserController(IUserService userService) : ControllerBase
 {
     [Authorize]
     [HttpGet("me")]
-    public async Task<ActionResult<MeResponse>> GetUser()
+    public async Task<ActionResult<CurrentUserResponse>> GetUser()
     {
         var user = await userService.GetAuthenticatedUserAsync();
 

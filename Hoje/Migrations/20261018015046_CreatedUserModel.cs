@@ -26,6 +26,22 @@ namespace Hoje.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                 });
+            
+            migrationBuilder.Sql("""
+                                 IF OBJECT_ID(N'[dbo].[Users]', N'U') IS NULL
+                                 BEGIN
+                                     CREATE TABLE [dbo].[Users]
+                                     (
+                                         [Id] uniqueidentifier NOT NULL,
+                                         [Username] nvarchar(max) NOT NULL,
+                                         [Password] nvarchar(max) NOT NULL,
+                                         [FirstName] nvarchar(max) NOT NULL,
+                                         [LastName] nvarchar(max) NOT NULL,
+                                         [Fullname] nvarchar(max) NOT NULL,
+                                         CONSTRAINT [PK_Users] PRIMARY KEY ([Id])
+                                     );
+                                 END;
+                                 """);
         }
 
         /// <inheritdoc />

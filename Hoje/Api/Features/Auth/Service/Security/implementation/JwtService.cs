@@ -31,8 +31,8 @@ public class JwtService : IJwtService
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Name, user.Fullname),
-            new(JwtRegisteredClaimNames.Email, user.Username)
+            new(JwtRegisteredClaimNames.Name, user.FirstName + " " + user.LastName),
+            new(JwtRegisteredClaimNames.Email, user.Email)
         };
 
         var key = new SymmetricSecurityKey(

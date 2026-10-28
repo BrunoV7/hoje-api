@@ -1,10 +1,16 @@
 using System.Text;
+using System.Text.Json.Serialization;
+using Hoje.Api.Features.Accounts.Repository.Implementation;
+using Hoje.Api.Features.Accounts.Service.Implementation;
+using Hoje.Api.Features.Accounts.Service.Interface;
 using Hoje.Api.Features.Auth.Repository.Implementation;
 using Hoje.Api.Features.Auth.Repository.Interface;
 using Hoje.Api.Features.Auth.Service;
 using Hoje.Api.Features.Auth.Service.Interface;
 using Hoje.Api.Features.Auth.Service.Security;
 using Hoje.Api.Features.Auth.Service.Security.Interface;
+using Hoje.Converters;
+using Hoje.Domain.Transactions;
 using Hoje.Infrastructure.Data;
 using Hoje.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,6 +34,11 @@ builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IBalanceService, BalanceService>();
 
 var jwtKey = builder.Configuration["Jwt:SecretKey"]
     ?? throw new InvalidOperationException("Missing configuration secret");
@@ -50,6 +61,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             )
         };
     });
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(namingPolicy: null, allowIntegerValues: false));
+    options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+});
+
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddHttpContextAccessor();
@@ -59,12 +77,6 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 app.UseExceptionHandler();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
 
 app.UseHttpsRedirection();
 

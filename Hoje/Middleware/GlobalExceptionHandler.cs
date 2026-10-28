@@ -1,3 +1,4 @@
+using Hoje.Exceptions.Accounts;
 using Hoje.Exceptions.Auth;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,10 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             InvalidRegistrationRequestException => StatusCodes.Status400BadRequest,
             EmailAlreadyExistsException => StatusCodes.Status409Conflict,
             InvalidCredentialsException => StatusCodes.Status401Unauthorized,
+            UnauthenticatedException => StatusCodes.Status401Unauthorized,
+            UnauthorizedAccessException  => StatusCodes.Status403Forbidden,
+            ResourceNotFoundException => StatusCodes.Status404NotFound,
+            ArchivedAccountException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError
         };
         
@@ -28,6 +33,11 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             EmailAlreadyExistsException => "Credenciais inválidas",
             InvalidCredentialsException => "Credenciais inválidas",
             InvalidRegistrationRequestException => "Dados de cadastro inválidos",
+            UnauthenticatedException => "Não autenticado",
+            UnauthorizedAccessException => "Não autorizado",
+            ResourceNotFoundException => "Recurso não encontrado",
+            ArchivedAccountException => "Conta indispnível",
+            ArgumentException => "Dados inválidos",
             _ => "Erro interno do servidor"
         };
 

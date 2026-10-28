@@ -84,6 +84,6 @@ public class AuthService(ILogger<AuthService> logger, IAuthRepository authReposi
         User user = new User(request);
         user = await authRepository.CreateUser(user);
         logger.LogInformation("new successful register: {userId}", user.Id);
-        return new RegisterResponse(user, jwtService.GenerateToken(user), DateTime.UtcNow.AddDays(1)); 
+        return new RegisterResponse(user, jwtService.GenerateToken(user), DateTime.UtcNow.AddMinutes(30)); 
     }
 }

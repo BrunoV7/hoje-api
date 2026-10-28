@@ -5,5 +5,7 @@ namespace Hoje.Api.Features.Auth.Service.Interface;
 
 public interface IUserService
 {
-    Task<MeResponse?> GetAuthenticatedUserAsync();
+    Task<CurrentUserResponse?> GetAuthenticatedUserAsync();
+    Task<User?> GetAuthenticatedUserAsyncInternal();
+    Task<Guid?> GetAuthenticatedUserIdAsync();
 }
