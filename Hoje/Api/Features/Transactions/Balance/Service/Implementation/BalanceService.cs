@@ -96,10 +96,10 @@ public class BalanceService : IBalanceService
         List<Transaction> incomes = new List<Transaction>();
         List<Transaction> expenses = new List<Transaction>();
         incomes = transactions
-            .Where(t => t.IsArchived != true && t.Type == TransactionType.Income)
+            .Where(t => t.IsArchived != true && t.Type == TransactionDirection.In)
             .ToList();
         expenses = transactions
-            .Where(t => t.IsArchived != true && t.Type == TransactionType.Expense)
+            .Where(t => t.IsArchived != true && t.Type == TransactionDirection.Out)
             .ToList();
 
         Money SumOfIncomes = new Money(currency, 0);

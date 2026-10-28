@@ -18,8 +18,10 @@ public class UpdateTransactionRequest
         {
             transaction.Type = Type switch
             {
-                "INCOME" => TransactionType.Income,
-                "EXPENSE" => TransactionType.Expense,
+                "INCOME" => TransactionDirection.In,
+                "EXPENSE" => TransactionDirection.Out,
+                "IN" => TransactionDirection.In,
+                "Out" => TransactionDirection.Out,
                 _ => throw new ArgumentException(
                     "Invalid transaction type. Must be 'INCOME' or 'EXPENSE'.",
                     nameof(Type))

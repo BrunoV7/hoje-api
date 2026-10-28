@@ -8,7 +8,7 @@ namespace Hoje.Domain.Transactions;
 public class Transaction
 {
     public Guid Id { get; set; }
-    public TransactionType Type { get; set; }
+    public TransactionDirection Type { get; set; }
     public Money Amount { get; set; } = null!;
     public string Currency { get; set; } = "";
     public DateOnly BookedOn { get; set; }
@@ -44,8 +44,10 @@ public class Transaction
 
         Type = request.Type switch
         {
-            "INCOME" => TransactionType.Income,
-            "EXPENSE" => TransactionType.Expense,
+            "INCOME" => TransactionDirection.In,
+            "EXPENSE" => TransactionDirection.Out,
+            "IN" => TransactionDirection.In,
+            "Out" => TransactionDirection.Out,
             _ => throw new ArgumentException(
                 "Invalid transaction type. Must be 'INCOME' or 'EXPENSE'.",
                 nameof(request)
