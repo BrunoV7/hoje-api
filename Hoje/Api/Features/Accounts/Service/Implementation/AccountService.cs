@@ -1,5 +1,6 @@
 using Hoje.Api.Features.Accounts.Service.Interface;
 using Hoje.Api.Features.Auth.Service.Interface;
+using Hoje.Api.Features.Common.Dates.Service;
 using Hoje.Domain.Accounts;
 using Hoje.Domain.Accounts.DTO;
 using Hoje.Domain.Common;
@@ -10,7 +11,7 @@ using Hoje.Model.Accounts;
 
 namespace Hoje.Api.Features.Accounts.Service.Implementation;
 
-public class AccountService(IAccountRepository db, IUserService userService, ILogger<AccountService> logger) : IAccountService
+public class AccountService(IAccountRepository db, IUserService userService, ILogger<AccountService> logger, ITodayService clock) : IAccountService
 {
     private async Task<User?> GetUserAsync()
     {
@@ -85,8 +86,8 @@ public class AccountService(IAccountRepository db, IUserService userService, ILo
 
     if (string.IsNullOrWhiteSpace(dto.Currency))
         return false;
-
-    if (dto.OpeningDate > DateOnly.FromDateTime(DateTime.UtcNow))
+    
+    if (dto.OpeningDate > clock.GetDate())
         return false;
 
     return true;

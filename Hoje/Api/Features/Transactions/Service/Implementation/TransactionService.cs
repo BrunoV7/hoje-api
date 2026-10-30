@@ -1,5 +1,6 @@
 using Hoje.Api.Features.Accounts.Service.Interface;
 using Hoje.Api.Features.Auth.Service.Interface;
+using Hoje.Api.Features.Common.Dates.Service;
 using Hoje.Domain.Accounts;
 using Hoje.Domain.Common;
 using Hoje.Domain.Transactions.DTO;
@@ -12,16 +13,22 @@ public class TransactionService : ITransactionService
     private readonly ITransactionRepository _transactionRepository;
     private readonly IUserService _userService;
     private readonly IAccountService _accountService;
+    private readonly ITodayService clock;
+    private readonly TimeProvider _timeProvider;
 
     public TransactionService(
         ITransactionRepository transactionRepository,
         IUserService userService,
-        IAccountService accountService
+        IAccountService accountService,
+        ITodayService clock,
+        TimeProvider timeProvider
     )
     {
         _transactionRepository = transactionRepository;
         _userService = userService;
         _accountService = accountService;
+        this.clock = clock;
+        _timeProvider = timeProvider;
     }
 
     public async Task<PagedResult<TransactionResponse>> GetTransactionsByUserId(
@@ -37,7 +44,7 @@ public class TransactionService : ITransactionService
         );
         if (!endDate.HasValue)
         {
-            endDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            endDate = clock.GetDate();
         }
         List<Transaction> result = await _transactionRepository.GetTransactionsByUserId(
             page,
@@ -99,7 +106,7 @@ public class TransactionService : ITransactionService
         if (account.UserId != userId)
             throw new ResourceNotFoundException();
 
-        Transaction createdTransaction = new Transaction(transaction, userId);
+        Transaction createdTransaction = new Transaction(transaction, userId, clock.GetDate(), _timeProvider.GetUtcNow());
         createdTransaction = await _transactionRepository.CreateTransaction(createdTransaction);
         return new TransactionResponse(createdTransaction);
     }
@@ -174,7 +181,7 @@ public class TransactionService : ITransactionService
             .ContinueWith(t => t.Result.Count);
         if (!endDate.HasValue)
         {
-            endDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            endDate = clock.GetDate();
         }
         List<Transaction> result = await _transactionRepository.GetTransactionsByAccountId(
             accountId,

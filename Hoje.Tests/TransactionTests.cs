@@ -1,3 +1,4 @@
+using Hoje.Api.Features.Common.Dates.Service;
 using Hoje.Domain.Transactions;
 using Hoje.Domain.Transactions.DTO;
 
@@ -22,6 +23,16 @@ public class TransactionTests
     {
         var request = ValidRequest(amount);
 
-        Assert.Throws<ArgumentException>(() => new Transaction(request, Guid.NewGuid()));
+        var today = new DateOnly(2026, 10, 30);
+        var now = new DateTimeOffset(2026, 10, 30, 3, 15, 0, TimeSpan.FromHours(-3));
+
+        Assert.Throws<ArgumentException>(() =>
+            new Transaction(
+                request,
+                Guid.NewGuid(),
+                today,
+                now
+            )
+        );
     }
 }

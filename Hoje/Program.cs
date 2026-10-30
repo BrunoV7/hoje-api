@@ -9,6 +9,7 @@ using Hoje.Api.Features.Auth.Service;
 using Hoje.Api.Features.Auth.Service.Interface;
 using Hoje.Api.Features.Auth.Service.Security;
 using Hoje.Api.Features.Auth.Service.Security.Interface;
+using Hoje.Api.Features.Common.Dates.Service;
 using Hoje.Converters;
 using Hoje.Domain.Transactions;
 using Hoje.Infrastructure.Data;
@@ -39,6 +40,8 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IBalanceService, BalanceService>();
+builder.Services.AddScoped<ITodayService, TodayService>();
+builder.Services.AddSingleton(TimeProvider.System);
 
 var jwtKey = builder.Configuration["Jwt:SecretKey"]
     ?? throw new InvalidOperationException("Missing configuration secret");

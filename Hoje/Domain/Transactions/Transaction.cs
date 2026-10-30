@@ -3,8 +3,6 @@ using Hoje.Domain.Common;
 using Hoje.Domain.Transactions.DTO;
 using Hoje.Domain.Users;
 
-namespace Hoje.Domain.Transactions;
-
 public class Transaction
 {
     public Guid Id { get; set; }
@@ -12,6 +10,7 @@ public class Transaction
     public Money Amount { get; set; } = null!;
     public string Currency { get; set; } = "";
     public DateOnly BookedOn { get; set; }
+
     public string Title { get; set; } = "";
     public string? Description { get; set; }
     public string Source { get; set; } = "Manual";
@@ -23,53 +22,54 @@ public class Transaction
     public User User { get; set; } = null!;
 
     public bool IsArchived { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? ArchivedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
+    public DateTimeOffset? ArchivedAt { get; set; }
 
     public Transaction() { }
 
-    public Transaction(CreateTransactionRequest request, Guid userId)
+    public Transaction(
+        CreateTransactionRequest request,
+        Guid userId,
+        DateOnly today,
+        DateTimeOffset now
+    )
     {
         ArgumentNullException.ThrowIfNull(request);
 
         if (request.AccountId == Guid.Empty)
-        {
-            throw new ArgumentException("AccountId must be provided and valid.", nameof(request));
-        }
+            throw new ArgumentException("AccountId must be provided.");
 
-        AccountId = request.AccountId;
+        if (request.Amount <= 0)
+            throw new ArgumentException("Amount must be greater than zero.");
+
+        if (string.IsNullOrWhiteSpace(request.Title))
+            throw new ArgumentException("Title must be provided.");
 
         Id = Guid.NewGuid();
 
+        AccountId = request.AccountId;
+        UserId = userId;
+
         Type = request.Type switch
         {
-            "INCOME" => TransactionDirection.In,
-            "EXPENSE" => TransactionDirection.Out,
-            "IN" => TransactionDirection.In,
-            "Out" => TransactionDirection.Out,
-            _ => throw new ArgumentException(
-                "Invalid transaction type. Must be 'INCOME' or 'EXPENSE'.",
-                nameof(request)
-            ),
+            "INCOME" or "IN" => TransactionDirection.In,
+            "EXPENSE" or "OUT" => TransactionDirection.Out,
+            _ => throw new ArgumentException("Invalid transaction type.")
         };
-
-        if (request.Amount <= 0)
-        {
-            throw new ArgumentException("Amount must be greater than zero.", nameof(request));
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Title))
-        {
-            throw new ArgumentException("Title must be provided.", nameof(request));
-        }
 
         Amount = new Money(request.Currency, request.Amount);
         Currency = request.Currency;
-        BookedOn = request.BookedOn == default ? DateOnly.FromDateTime(DateTime.UtcNow) : request.BookedOn;
+
+        BookedOn = request.BookedOn == default
+            ? today
+            : request.BookedOn;
+
         Title = request.Title;
         Description = request.Description;
         Source = "Manual";
-        UserId = userId;
+
+        CreatedAt = now;
+        UpdatedAt = now;
     }
 }

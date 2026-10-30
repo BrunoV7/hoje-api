@@ -1,5 +1,6 @@
 using Hoje.Api.Features.Accounts.Service.Interface;
 using Hoje.Api.Features.Auth.Service.Interface;
+using Hoje.Api.Features.Common.Dates.Service;
 using Hoje.Domain.Accounts;
 using Hoje.Domain.Common;
 using Hoje.Domain.Transactions;
@@ -12,16 +13,19 @@ public class BalanceService : IBalanceService
     private readonly ITransactionRepository _transactionRepository;
     private readonly IAccountService _accountService;
     private readonly IUserService _userService;
+    private readonly ITodayService _today;
 
     public BalanceService(
         ITransactionRepository transactionRepository,
         IAccountService accountService,
-        IUserService userService
+        IUserService userService,
+        ITodayService today
     )
     {
         _transactionRepository = transactionRepository;
         _accountService = accountService;
         _userService = userService;
+        _today = today;
     }
 
     public async Task<BalanceResponse> GetBalanceByAccountIdAsync(
@@ -46,7 +50,7 @@ public class BalanceService : IBalanceService
             throw new ArchivedAccountException($"Account with ID {AccountId} is archived.");
 
         startDate ??= DateOnly.FromDateTime(account.CreatedAt);
-        endDate ??= asOf ?? DateOnly.FromDateTime(DateTime.UtcNow);
+        endDate ??= asOf ?? _today.GetDate();
 
         if (startDate > endDate)
         {
