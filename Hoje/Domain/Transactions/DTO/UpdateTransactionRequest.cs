@@ -12,16 +12,14 @@ public class UpdateTransactionRequest
     public string? Description { get; set; }
     public Guid? AccountId { get; set; }
 
-    public Transaction ApplyToTransaction(Transaction transaction)
+    public Transaction ApplyToTransaction(Transaction transaction, DateOnly today)
     {
         if (Type != null)
         {
-            transaction.Type = Type switch
+            transaction.Type = Type.ToUpperInvariant() switch
             {
-                "INCOME" => TransactionDirection.In,
-                "EXPENSE" => TransactionDirection.Out,
-                "IN" => TransactionDirection.In,
-                "Out" => TransactionDirection.Out,
+                "INCOME" or "IN" => TransactionDirection.In,
+                "EXPENSE" or "OUT" => TransactionDirection.Out,
                 _ => throw new ArgumentException(
                     "Invalid transaction type. Must be 'INCOME' or 'EXPENSE'.",
                     nameof(Type))
@@ -36,6 +34,7 @@ public class UpdateTransactionRequest
 
         if (BookedOn.HasValue)
         {
+            Transaction.EnsureBookedOnIsInRange(BookedOn.Value, today);
             transaction.BookedOn = BookedOn.Value;
         }
 
@@ -58,5 +57,5 @@ public class UpdateTransactionRequest
 
         return transaction;
     }
-    
+
 }
