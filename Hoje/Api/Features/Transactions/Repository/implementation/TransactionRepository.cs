@@ -1,4 +1,5 @@
 using Hoje.Api.Features.Auth.Service.Interface;
+using Hoje.Api.Features.Common.Dates.Service;
 using Hoje.Exceptions.Accounts;
 using Hoje.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -9,11 +10,13 @@ public class TransactionRepository : ITransactionRepository
 {
     private readonly HojeDbContext _context;
     private readonly IUserService _userService;
+    private readonly ITodayService _today;
 
-    public TransactionRepository(HojeDbContext context, IUserService userService)
+    public TransactionRepository(HojeDbContext context, IUserService userService, ITodayService today)
     {
         _context = context;
         _userService = userService;
+        _today = today;
     }
 
     public async Task<List<Transaction>> GetTransactionsByUserId(
@@ -38,7 +41,7 @@ public class TransactionRepository : ITransactionRepository
             query = (IOrderedQueryable<Transaction>)query.Where(transaction => transaction.BookedOn <= endDate.Value);
         } else
         {
-            query = (IOrderedQueryable<Transaction>)query.Where(transaction => transaction.BookedOn <= DateOnly.FromDateTime(DateTime.UtcNow));
+            query = (IOrderedQueryable<Transaction>)query.Where(transaction => transaction.BookedOn <= _today.GetDate());
         }
 
         return await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
@@ -139,7 +142,7 @@ public class TransactionRepository : ITransactionRepository
             query = (IOrderedQueryable<Transaction>)query.Where(transaction => transaction.BookedOn <= endDate.Value);
         } else
         {
-            query = (IOrderedQueryable<Transaction>)query.Where(transaction => transaction.BookedOn <= DateOnly.FromDateTime(DateTime.UtcNow));
+            query = (IOrderedQueryable<Transaction>)query.Where(transaction => transaction.BookedOn <= _today.GetDate());
         }
 
         return await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
@@ -167,7 +170,7 @@ public class TransactionRepository : ITransactionRepository
             query = (IOrderedQueryable<Transaction>)query.Where(transaction => transaction.BookedOn <= endDate.Value);
         } else
         {
-            query = (IOrderedQueryable<Transaction>)query.Where(transaction => transaction.BookedOn <= DateOnly.FromDateTime(DateTime.UtcNow));
+            query = (IOrderedQueryable<Transaction>)query.Where(transaction => transaction.BookedOn <= _today.GetDate());
         }
 
         return await query.CountAsync();
