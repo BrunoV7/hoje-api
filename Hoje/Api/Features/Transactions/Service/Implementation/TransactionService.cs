@@ -145,7 +145,7 @@ public class TransactionService : ITransactionService
                 throw new ResourceNotFoundException();
         }
 
-        Transaction updatedTransaction = updateRequest.ApplyToTransaction(existingTransaction);
+        Transaction updatedTransaction = updateRequest.ApplyToTransaction(existingTransaction, clock.GetDate());
         await _transactionRepository.UpdateTransaction(updatedTransaction);
 
         return new TransactionResponse(updatedTransaction);

@@ -1,6 +1,7 @@
 using Hoje.Domain.Accounts;
 using Hoje.Domain.Common;
 using Hoje.Domain.Transactions.DTO;
+using Hoje.Domain.Transactions.Exceptions;
 using Hoje.Domain.Users;
 
 public class Transaction
@@ -64,6 +65,7 @@ public class Transaction
         BookedOn = request.BookedOn == default
             ? today
             : request.BookedOn;
+        EnsureBookedOnIsInRange(BookedOn, today);
 
         Title = request.Title;
         Description = request.Description;
@@ -71,5 +73,16 @@ public class Transaction
 
         CreatedAt = now;
         UpdatedAt = now;
+    }
+
+    public static void EnsureBookedOnIsInRange(DateOnly bookedOn, DateOnly today)
+    {
+        var minDate = today.AddYears(-5);
+        var maxDate = today.AddYears(5);
+
+        if (bookedOn < minDate || bookedOn > maxDate)
+        {
+            throw new InvalidTransactionDateException(bookedOn);
+        }
     }
 }

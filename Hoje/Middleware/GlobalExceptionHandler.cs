@@ -1,3 +1,4 @@
+using Hoje.Domain.Transactions.Exceptions;
 using Hoje.Exceptions.Accounts;
 using Hoje.Exceptions.Auth;
 using Microsoft.AspNetCore.Diagnostics;
@@ -23,6 +24,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             UnauthorizedAccessException  => StatusCodes.Status403Forbidden,
             ResourceNotFoundException => StatusCodes.Status404NotFound,
             ArchivedAccountException => StatusCodes.Status400BadRequest,
+            InvalidTransactionDateException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError
         };
         
@@ -37,6 +39,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             UnauthorizedAccessException => "Não autorizado",
             ResourceNotFoundException => "Recurso não encontrado",
             ArchivedAccountException => "Conta indispnível",
+            InvalidTransactionDateException => "Data da transação inválida",
             ArgumentException => "Dados inválidos",
             _ => "Erro interno do servidor"
         };
